@@ -1,65 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Best Order Picker</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#4CAF50" />
-  <link rel="icon" href="bc-icon.png" type="image/png" />
-  <style>
-    body { font-family: Arial, sans-serif; padding: 1em; background: #f0f0f0; }
-    h1 { text-align: center; }
-    label { display: block; margin-top: 1em; }
-    input { width: 100%; padding: 0.5em; margin-top: 0.2em; }
-    button { margin-top: 1em; padding: 0.7em; width: 100%; background: #4CAF50; color: white; border: none; font-size: 1em; }
-    .result { margin-top: 1em; padding: 1em; text-align: center; font-size: 1.2em; border-radius: 5px; }
-    .accept { background-color: #d4edda; color: #155724; }
-    .reject { background-color: #f8d7da; color: #721c24; }
-  </style>
 </head>
 <body>
-  <h1>🚖 Best Order Picker</h1>
-  
-  <label>Price (EGP): <input type="number" id="price" /></label>
-  <label>Distance (km): <input type="number" id="distance" step="0.1" /></label>
-  <label>Time (minutes): <input type="number" id="time" /></label>
-  
-  <button onclick="calculate()">Calculate</button>
-  
-  <div id="output" class="result"></div>
-  
+  <h1>Best Order Picker</h1>
+  <p>Compare order prices from Didi and Uber.</p>
+
+  <label>Didi price (EGP): <input type="number" id="didi"></label><br><br>
+  <label>Uber price (EGP): <input type="number" id="uber"></label><br><br>
+
+  <button onclick="checkBetter()">Check Best</button>
+
+  <p id="result"></p>
+
   <script>
-    const minPerKm = 5;
-    const minPerMin = 2;
+    function checkBetter() {
+      const didi = parseFloat(document.getElementById('didi').value);
+      const uber = parseFloat(document.getElementById('uber').value);
 
-    function calculate() {
-      const price = parseFloat(document.getElementById('price').value);
-      const distance = parseFloat(document.getElementById('distance').value);
-      const time = parseFloat(document.getElementById('time').value);
-      const output = document.getElementById('output');
-
-      if (!price || !distance || !time) {
-        output.textContent = "Please fill in all fields.";
-        output.className = "result reject";
+      if (isNaN(didi) || isNaN(uber)) {
+        document.getElementById('result').innerText = "Enter both prices!";
         return;
       }
 
-      const perKm = price / distance;
-      const perMin = price / time;
-      const meetsKm = perKm >= minPerKm;
-      const meetsMin = perMin >= minPerMin;
-
-      output.innerHTML = `
-        EGP/km: ${perKm.toFixed(2)}<br>
-        EGP/min: ${perMin.toFixed(2)}<br>
-        Decision: ${meetsKm && meetsMin ? "✅ Accept" : "❌ Reject"}
-      `;
-      output.className = "result " + (meetsKm && meetsMin ? "accept" : "reject");
-    }
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
+      if (didi < uber) {
+        document.getElementById('result').innerText = "Didi is cheaper!";
+      } else if (uber < didi) {
+        document.getElementById('result').innerText = "Uber is cheaper!";
+      } else {
+        document.getElementById('result').innerText = "Both are the same price.";
+      }
     }
   </script>
 </body>
